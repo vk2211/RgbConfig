@@ -1,4 +1,4 @@
-package com.jstelcom.colorshape;
+package com.com.color.acticity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,7 +10,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,12 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.color.function.PictureReconizer;
-import com.color.function.colorbean.StringColor;
-
-import org.w3c.dom.Text;
+import com.jstelcom.colorshape.R;
 
 public class MainActivity extends AppCompatActivity {
 	private ImageView mImage_REC;

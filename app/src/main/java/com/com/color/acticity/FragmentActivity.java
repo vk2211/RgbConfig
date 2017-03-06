@@ -1,4 +1,4 @@
-package com.jstelcom.colorshape;
+package com.com.color.acticity;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -9,6 +9,7 @@ import android.widget.RadioGroup;
 import com.color.function.fragment.DiscoverFragment;
 import com.color.function.fragment.MainFragment;
 import com.color.function.fragment.MyFragment;
+import com.jstelcom.colorshape.R;
 
 public class FragmentActivity extends AppCompatActivity implements RadioGroup.OnCheckedChangeListener{
 
