@@ -18,7 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.color.function.colorbean.BaseColor;
+import com.color.function.colorbean.IdentyColor;
 import com.jstelcom.colorshape.R;
 import com.jude.easyrecyclerview.adapter.BaseViewHolder;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
@@ -26,7 +26,7 @@ import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 /**
  * Created by yaochuan on 2017/3/4.
  */
-public class ColorSettingAdapter extends RecyclerArrayAdapter<BaseColor> {
+public class ColorSettingAdapter extends RecyclerArrayAdapter<IdentyColor> {
 	private static final String TAG = ColorSettingAdapter.class.getSimpleName();
 	private int mCurrentPos = -1;
 	private OnSettingColorListener mOnSettingColorListener;
@@ -39,7 +39,7 @@ public class ColorSettingAdapter extends RecyclerArrayAdapter<BaseColor> {
 		super(context);
 	}
 
-	public ColorSettingAdapter(Context context, BaseColor[] objects) {
+	public ColorSettingAdapter(Context context, IdentyColor[] objects) {
 		super(context, objects);
 	}
 
@@ -53,7 +53,7 @@ public class ColorSettingAdapter extends RecyclerArrayAdapter<BaseColor> {
 
 	public void save() {
 		for (int i = 0; i < this.getCount(); i++) {
-			BaseColor color = this.getItem(i);
+			IdentyColor color = this.getItem(i);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class ColorSettingAdapter extends RecyclerArrayAdapter<BaseColor> {
 		return new ColorViewHolder(parent);
 	}
 
-	class ColorViewHolder extends BaseViewHolder<BaseColor> {
+	class ColorViewHolder extends BaseViewHolder<IdentyColor> {
 		TextView mTv_ColorName, mTv_Rmin, mTv_Rmax, mTv_Gmin, mTv_Gmax, mTv_Bmin, mTv_Bmax;
 		Button bt_config;
 		Button bt_reset;
@@ -104,7 +104,7 @@ public class ColorSettingAdapter extends RecyclerArrayAdapter<BaseColor> {
 				@Override
 				public void onClick(View view) {
 					int pos = ColorViewHolder.this.getAdapterPosition();
-					BaseColor color = ColorSettingAdapter.this.getItem(pos);
+					IdentyColor color = ColorSettingAdapter.this.getItem(pos);
 					color.reset();
 					ColorSettingAdapter.this.update(color, pos);
 				}
@@ -112,7 +112,7 @@ public class ColorSettingAdapter extends RecyclerArrayAdapter<BaseColor> {
 		}
 
 		@Override
-		public void setData(BaseColor data) {
+		public void setData(IdentyColor data) {
 			mTv_ColorName.setText(data.getmColor());
 			mTv_Rmax.setText("" + data.getmRmax());
 			mTv_Rmin.setText("" + data.getmRmin());

@@ -14,8 +14,62 @@
 	tools:context="com.jstelcom.colorshape.MainActivity"
 	tools:showIn="@layout/main">
 
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="60dp"
+		android:orientation="horizontal"
+		android:gravity="center"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"
+		android:layout_marginBottom="171dp">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:text="@string/inputtext"
+			android:textSize="20sp"
+			android:id="@+id/textView"
+			android:gravity="center">
+			</TextView>
+
+		<EditText
+			android:layout_width="200dp"
+			android:layout_height="match_parent"
+			android:layout_marginLeft="20dp"
+			android:id="@+id/inputet"/>
+
+	</LinearLayout>
+
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="识别"
+		android:id="@+id/bt_REC"
+		android:layout_alignParentBottom="true"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="76dp"/>
+
+	<ImageView
+		android:layout_width="300dp"
+		android:layout_height="300dp"
+		android:id="@+id/sourceImage"
+		android:layout_alignParentTop="true"
+		android:layout_centerHorizontal="true"/>
+
 	<TextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Hello World!"/>
+		android:text="识别结果"
+		android:textSize="15sp"
+		android:textColor="#ff0000"
+		android:id="@+id/te_result"
+		android:layout_above="@+id/bt_REC"
+		android:layout_alignLeft="@+id/sourceImage"
+		android:layout_alignStart="@+id/sourceImage"
+		android:layout_marginLeft="10dp"
+		android:layout_marginStart="10dp"
+		android:layout_marginBottom="14dp"/>
+
 </RelativeLayout>

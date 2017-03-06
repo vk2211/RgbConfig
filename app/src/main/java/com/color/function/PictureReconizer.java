@@ -1,14 +1,12 @@
 package com.color.function;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.color.function.colorbean.Charge_Color;
+import com.color.function.colorbean.IdentyColor;
 import com.color.function.fragment.Coordinates;
 
 import java.util.ArrayList;
@@ -29,14 +27,14 @@ public class PictureReconizer {
 	private int[] location_X = new int[512];
 	private int index1 = 0;
 	String shapeResult = null;
-	int minNum = 70;
+	int minNum = 100;
 
 
 	public PictureReconizer(Context context){
 		mContext=context;
+		mBitmapList=new ArrayList<Bitmap>();
+		mResultList=new ArrayList<Bitmap>();
 	}
-
-
 	/**
 	 *   获取识别结果
 	 * @param colorshape
@@ -49,26 +47,32 @@ public class PictureReconizer {
 		int numbershape=0;
 		Bitmap bitmap;
 
-		Charge_Color charge_color=new Charge_Color(mContext);
-		if(charge_color.init_Color(num[0])){
+		IdentyColor identyColor=new IdentyColor(mContext);//创建颜色对象
 
-			bitmap=convertToBlack(bmp,charge_color);
-			shape_first_Division(bitmap,true,charge_color);//第一次形状分割
-			shape_second_Division(mBitmapList,charge_color);//第二次形状分割
+		if(identyColor.setRgb(num[0])){
 
-			numbershape=getnumOfshape(mResultList,charge_color,num[1]);
-
-
+			bitmap=convertToBlack(bmp,identyColor,num[0]);  //过滤背景
+			shape_first_Division(bitmap,true,identyColor,num[0]);//第一次形状分割
+			shape_second_Division(mBitmapList,identyColor,num[0]);//第二次形状分割
+			numbershape=getnumOfshape(mResultList,identyColor,num[0],num[1]);  //进行识别
 		}
+
 		else {
 			Toast.makeText(mContext, "请配置RGB", Toast.LENGTH_SHORT).show();
 		}
-
 		return numbershape;
 
 	}
 
-	public int getnumOfshape(List<Bitmap> list,Charge_Color charge_color ,int shapenum){
+	public List<Bitmap> getmResultList() {
+		return mResultList;
+	}
+
+	public List<Bitmap> getmBitmapList() {
+		return mBitmapList;
+	}
+
+	public int getnumOfshape(List<Bitmap> list, IdentyColor identyColor, int colornum, int shapenum){
 
 		triaNum=0;
 		rectNum=0;
@@ -77,7 +81,7 @@ public class PictureReconizer {
 		for(int i=0;i<list.size();i++){
 
 			Bitmap bitmap=list.get(i);
-			shapeIdentification(bitmap,charge_color,shapenum);
+			shapeIdentification(bitmap,identyColor,colornum);
 
 		}
 
@@ -93,6 +97,52 @@ public class PictureReconizer {
 		}
 
 	}
+
+
+
+
+	public int palseColor(String colorshape) {
+
+		/**
+		 * 颜色命令解析
+		 */
+		switch (colorshape) {
+
+		case "红色":
+			return 0;
+
+
+		case "绿色":
+			return 1;
+
+		case "蓝色":
+			return 2;
+
+		case "黄色":
+			return 3;
+
+		case "品色":
+			return 4;
+
+		case "青色":
+			return 5;
+
+		case "黑色":
+			return 6;
+
+		case "白色":
+			return 7;
+
+		case "底色":
+			return 8;
+
+
+		default:
+			return -1;
+
+		}
+	}
+
 
 
 
@@ -135,6 +185,9 @@ public class PictureReconizer {
 			num[0]=7;
 			break;
 
+		case "底色":
+			num[0]=8;
+			break;
 		default:num[0]=-1;break;
 
 		}
@@ -167,17 +220,14 @@ public class PictureReconizer {
 	}
 
 
-
-
-
 	/**
 	 *   过滤
-	 * @param bip
+	 * @param
 	 * @param
 	 * @return
 	 */
 
-	private Bitmap convertToBlack(Bitmap bip,Charge_Color charge_color) {// 像素处理背景变为黑色，红绿蓝不变
+	public Bitmap convertToBlack(Bitmap bip,IdentyColor identyColor,int colorm) {// 像素处理背景变为黑色，红绿蓝不变
 		int width = bip.getWidth();
 		int height = bip.getHeight();
 		int[] pixels = new int[width * height];
@@ -191,7 +241,7 @@ public class PictureReconizer {
 				int g = (pixel >> 8) & 0xff;
 				int b = pixel & 0xff;
 
-				if (charge_color.isIdentyColor(r,g,b)) {  //提取需要的颜色
+				if (identyColor.isIdentyColor(r,g,b,colorm)) {  //提取需要的颜色
 					pl[offset + x] = pixel;
 				} else {
 					pl[offset + x] = 0xffff00ff;// 紫色
@@ -206,13 +256,14 @@ public class PictureReconizer {
 	}
 
 
+
 	/**
 	 *
 	 * @param bp
-	 * @param charge_color
+	 * @param identyColor
 	 * @return
 	 */
-	private ArrayList<Coordinates> getListOf_Coordinates(Bitmap bp, Charge_Color charge_color){
+	private ArrayList<Coordinates> getListOf_Coordinates(Bitmap bp, IdentyColor identyColor,int colornum){
 
 		// // 存储图片上方坐标值
 		ArrayList<Coordinates> list = new ArrayList<Coordinates>();
@@ -227,11 +278,10 @@ public class PictureReconizer {
 				int r = (pixel >> 16) & 0xff;
 				int g = (pixel >> 8) & 0xff;
 				int b = pixel & 0xff;
-
 				/**
 				 * 将过滤的颜色添加到list集合
 				 */
-				if(charge_color.isIdentyColor(r,g,b)){
+				if(identyColor.isIdentyColor(r,g,b,colornum)){
 					list.add(new Coordinates(x, y));
 				}
 			}
@@ -246,16 +296,17 @@ public class PictureReconizer {
 	 *  第一次进行形状分割
 	 * @param
 	 */
-	private void shape_first_Division(Bitmap bp,boolean flag,Charge_Color charge_color) {
+	public void shape_first_Division(Bitmap bp,boolean flag,IdentyColor identyColor,int colornum) {
 
 
 		if(flag){mBitmapList.clear();mResultList.clear();}
 
-		ArrayList<Coordinates> list=getListOf_Coordinates(bp,charge_color);
+		ArrayList<Coordinates> list=getListOf_Coordinates(bp,identyColor,colornum);
 
 		index1 = 0;
 		for (int i = 0; i < list.size(); i++) {
 			if (i > 0) {
+
 				if ((list.get(i).getX() - list.get(i-1).getX()>4)||i==list.size()-1) {
 					index1++;
 					location_X[index1] = list.get(i).getX();
@@ -265,6 +316,7 @@ public class PictureReconizer {
 					if(flag){
 						bitmap=adjustPhotoRotation(bitmap,-90);
 						mBitmapList.add(bitmap);  //将分割并且旋转的图片保存到list集合
+						Log.e("******mBitmapList ",String.valueOf(mBitmapList.size()));
 
 					}
 					else {
@@ -277,21 +329,24 @@ public class PictureReconizer {
 		}
 	}
 
+
 	/**
 	 * 第二次形状分割
 	 * @param bitmapList
 	 */
 
-	private void shape_second_Division(List<Bitmap> bitmapList,Charge_Color charge_color){
+	public List<Bitmap> shape_second_Division(List<Bitmap> bitmapList,IdentyColor identyColor,int colornum){
 
 		for(int j=0;j<bitmapList.size();j++){
 
-			shape_first_Division(bitmapList.get(j),false,charge_color);
+			shape_first_Division(bitmapList.get(j),false,identyColor,colornum);
 
 			Log.e("****** j========",String.valueOf(j));
 		}
 
 		Log.e("******mResultList ",String.valueOf(mResultList.size()));
+
+		return mResultList;
 
 	}
 
@@ -321,15 +376,16 @@ public class PictureReconizer {
 	 * @return
 	 */
 
-	private void  shapeIdentification(Bitmap bp,Charge_Color charge_color,int shapenum) {
+	private void  shapeIdentification(Bitmap bp, IdentyColor identyColor, int colornum) {
 
 		/**
 		 * 清除原始数据
 		 */
-		charge_color.getmBase_Color().getListl().clear();
-		charge_color.getmBase_Color().getListr().clear();
-		ArrayList<Coordinates> listl=charge_color.getmBase_Color().getListl();
-		ArrayList<Coordinates> listr=charge_color.getmBase_Color().getListr();
+		identyColor.getListl().clear();
+		identyColor.getListr().clear();
+
+		ArrayList<Coordinates> listl=identyColor.getListl();
+		ArrayList<Coordinates> listr=identyColor.getListr();
 
 		int up_index=0;
 		int down_index=0;
@@ -347,7 +403,7 @@ public class PictureReconizer {
 				int r = (pixel >> 16) & 0xff;
 				int g = (pixel >> 8) & 0xff;
 				int b = pixel & 0xff;
-				if (charge_color.isIdentyColor(r,g,b)) {// 红色
+				if (identyColor.isIdentyColor(r,g,b,colornum)) {
 					if(up_index==5){
 						listl.add(new Coordinates(x,y));
 					}
@@ -369,7 +425,7 @@ public class PictureReconizer {
 				int r = (pixel >> 16) & 0xff;
 				int g = (pixel >> 8) & 0xff;
 				int b = pixel & 0xff;
-				if (charge_color.isIdentyColor(r,g,b)) {// 红色
+				if (identyColor.isIdentyColor(r,g,b,colornum)) {// 红色
 					if(down_index==5){
 						listr.add(new Coordinates(x, y));
 					}
@@ -382,9 +438,7 @@ public class PictureReconizer {
 					break;
 			}
 		}
-
 		shape(listl,listr);
-
 	}
 
 
@@ -413,7 +467,4 @@ public class PictureReconizer {
 		} else
 			Toast.makeText(mContext, "颜色识别失败，请改正算法。。。", Toast.LENGTH_SHORT).show();
 	}
-
-
-
 }

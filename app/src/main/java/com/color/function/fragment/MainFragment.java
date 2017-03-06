@@ -10,9 +10,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
-import com.color.function.colorbean.BaseColor;
+import com.color.function.colorbean.IdentyColor;
 import com.jstelcom.colorshape.R;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 
@@ -24,10 +25,12 @@ public class MainFragment extends Fragment {
 
 	private TouchImageView mConfigImageView;
 	private TextView mRgbText;
-	private Bitmap bitmap;
 	private ColorSettingAdapter mColorSettingAdapter;
 	private EasyRecyclerView mColorSettingList;
 	private Bitmap mShotBitmap;
+	private Button bt_save;
+
+	private List<IdentyColor> mList;
 
 
 	@Nullable
@@ -37,29 +40,42 @@ public class MainFragment extends Fragment {
 		View view = inflater.inflate(R.layout.fragment_main, container, false);
 		mConfigImageView = (TouchImageView) view.findViewById(R.id.configImage);
 		mColorSettingList = (EasyRecyclerView) view.findViewById(R.id.colorSettingList);
+
 		mRgbText = (TextView) view.findViewById(R.id.rgbText);
-
-		//拿到原始图像的长宽
-//		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pic1);
-//		mConfigImageView.setImageBitmap(bitmap);
-
+		bt_save=(Button)view.findViewById(R.id.save);
+		bt_save.setOnClickListener(saveRGBOnclickListener);
 		mConfigImageView.setOnTouchListener(onTouchListener);
 		LinearLayoutManager m = new LinearLayoutManager(getActivity());
 		m.setOrientation(LinearLayoutManager.VERTICAL);
 		mColorSettingList.setLayoutManager(m);
+
 		mColorSettingAdapter = new ColorSettingAdapter(getActivity());
+
 		mColorSettingAdapter.setOnSettingColorListener(new ColorSettingAdapter.OnSettingColorListener() {
 			@Override
 			public void onSettingColor(boolean isSetting) {
 				mConfigImageView.enableDrag(!isSetting);
 			}
 		});
-		mColorSettingAdapter.addAll(initListdata());
+
+		mList=initListdata();
+
+		mColorSettingAdapter.addAll(mList);
 		mColorSettingList.setAdapter(mColorSettingAdapter);
 
 		return view;
 
 	}
+
+	/**
+	 * 保存RGB的值
+	 */
+	private View.OnClickListener saveRGBOnclickListener=new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			saveAllRGB(mList);
+		}
+	};
 
 	/**
 	 * 触屏获取RGB的值
@@ -86,7 +102,7 @@ public class MainFragment extends Fragment {
 				mRgbText.setText("R:" + r + ",G:" + g + ",B:" + b);
 				int pos = mColorSettingAdapter.getCurrentPos();
 				if (pos > -1) {
-					BaseColor color = mColorSettingAdapter.getItem(pos);
+					IdentyColor color = mColorSettingAdapter.getItem(pos);
 					color.update(r, g, b);
 					mColorSettingAdapter.update(color, pos);
 					mColorSettingAdapter.notifyItemChanged(pos);
@@ -102,17 +118,34 @@ public class MainFragment extends Fragment {
 	 *
 	 * @return
 	 */
-	public List<BaseColor> initListdata() {
+	public List<IdentyColor> initListdata() {
 
-		List<BaseColor> list = new ArrayList<BaseColor>();
+		List<IdentyColor> list = new ArrayList<IdentyColor>();
 		String[] data = {"红色", "绿色", "蓝色", "黄色", "品色", "青色", "黑色", "白色", "底色"};
 		for (int i = 0; i < data.length; i++) {
-
-			BaseColor baseColor = new BaseColor(getContext(), data[i]);
+			IdentyColor baseColor = new IdentyColor(getContext(), data[i]);
+			baseColor.setRgb(i);
 			list.add(baseColor);
 		}
 		return list;
 	}
+
+
+	/**
+	 *   保存所有的RGB值
+	 */
+	public void saveAllRGB(List<IdentyColor> list){
+
+		for (int i=0;i<list.size();i++){
+
+			list.get(i).saveRGB(i);
+		}
+	}
+	/**
+	 * 截屏
+	 * @param activity
+	 * @return
+	 */
 
 	private Bitmap shot(Activity activity) {
 		View view = activity.getWindow().getDecorView();
@@ -126,6 +159,13 @@ public class MainFragment extends Fragment {
 		view.destroyDrawingCache();
 		return bmp;
 	}
+
+
+	/**
+	 * 截屏
+	 * @param
+	 * @return
+	 */
 
 	private Bitmap shot(View view) {
 		view.buildDrawingCache();
