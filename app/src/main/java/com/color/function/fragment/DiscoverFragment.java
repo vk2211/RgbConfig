@@ -85,8 +85,9 @@ public class DiscoverFragment extends Fragment {
                         int num=mPictureReconizer.palseColor(mEditText.getText().toString());
                         Log.e("###########num ",String.valueOf(num));
                         IdentyColor identyColor=new IdentyColor(getContext());
-                        Bitmap bitmap= mPictureReconizer.convertToBlack(bmp,identyColor,num);
-                        mPictureReconizer.shape_first_Division(bitmap,true,identyColor,num);
+                       // Bitmap bitmap= mPictureReconizer.convertToBlack(bmp,identyColor,num);
+
+                        mPictureReconizer.shape_first_Division(bmp,true,identyColor,num);
                         List<Bitmap> list= mPictureReconizer.shape_second_Division(mPictureReconizer.getmBitmapList(),identyColor, num);
                         Message message=new Message();
                         message.obj=list;
